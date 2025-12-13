@@ -1,0 +1,19 @@
+# 1. Security (NEVER upload .env)
+.env
+.env.local
+
+# 2. Python Virtual Environments
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# 3. IDE / Editor Settings
+.vscode/
+.idea/
+.DS_Store
+
+# 4. Logs and Temporary Files
+*.log
+neo4j_import_logs/

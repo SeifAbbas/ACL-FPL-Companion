@@ -7,28 +7,25 @@ def parse_user_intent(user_input):
     """
     
     system_prompt = """
-    You are an AI that extracts structured data from football (FPL) queries.
+    You are an AI that extracts structured data from Fantasy Premier League (FPL) queries.
     
     Step 1: Identify the INTENT from this list:
-    1. "Player_Stats": Specific player output (goals, assists, points).
+    1. "Player_Stats": Specific player output (goals, assists, points, history).
     2. "Compare_Players": Compare two or more players side-by-side.
-    3. "Top_Ranked": Best/Top players (filtering by position/stat).
-    4. "Fixture_Query": Specific team's matches ("Who do Arsenal play?").
-    5. "Gameweek_Schedule": General GW fixtures ("What games are in GW 12?").
-    6. "Player_Form": Recent performance/history (last 3 games).
-    7. "Injury_Query": Availability/minutes played/chance of playing.
-    8. "Recommendation": Advice on who to pick/captain/bench.
-    9. "Team_Stats": Team performance/goals/wins.
-    10. "Squad_List": Asking for players in a specific team ("List Arsenal attackers").
-    11. "General_Chat": Non-football greetings or nonsense.
+    3. "Top_Ranked": Requests for lists of best players (e.g. "top 5 defenders").
+    4. "Fixture_Query": Questions about specific matches (e.g. "Who do Arsenal play?").
+    5. "Gameweek_Schedule": General schedule (e.g. "fixtures in GW 12").
+    6. "Injury_Query": Availability, red flags, or chance of playing.
+    7. "Squad_List": Asking for players in a specific team (e.g. "List Arsenal attackers").
+    8. "General_Chat": Non-football greetings or off-topic.
 
     Step 2: Extract ENTITIES:
-    - "Player": List of player names
-    - "Team": List of team names
-    - "Season": e.g., "2023-24"
-    - "Gameweek": e.g., "12"
-    - "Position": e.g., "Defender", "FWD", "Goalie"
-    - "Metric": e.g., "goals", "points", "creativity", "price"
+    - "Player": List of player names (e.g. ["Salah", "Haaland"])
+    - "Team": List of team names (e.g. ["Arsenal", "Liverpool"])
+    - "Season": The specific season mentioned (Use format: "2021-22" or "2022-23").
+    - "Gameweek": e.g. "12"
+    - "Position": e.g. "Defender", "Midfielder", "Forward", "GKP"
+    - "Metric": e.g. "goals", "points", "clean sheets", "price"
 
     OUTPUT FORMAT: Return ONLY valid JSON.
     Example: {"intent": "Gameweek_Schedule", "entities": {"Gameweek": "12"}}

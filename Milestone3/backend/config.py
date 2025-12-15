@@ -1,39 +1,71 @@
 import os
 from dotenv import load_dotenv
 from groq import Groq
-from langchain_huggingface import HuggingFaceEmbeddings
 
-# 1. Load Environment Variables
+# Load environment variables from .env file
 load_dotenv()
 
-# 2. Neo4j Credentials
-NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
-NEO4J_USER = os.getenv("NEO4J_USERNAME", "neo4j")
-NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "your_password")
+class Config:
+    # ---------------------------------------------------------
+    # 1. Database Credentials
+    # ---------------------------------------------------------
+    NEO4J_URI = os.getenv("NEO4J_URI")
+    NEO4J_USERNAME = os.getenv("NEO4J_USERNAME", "neo4j")
+    NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
 
-# 3. LLM Config (Groq)
-API_KEY = os.getenv("LLM_API_KEY")
-MODEL_NAME = "llama-3.3-70b-versatile" # Use a high-quality model
+    # ---------------------------------------------------------
+    # 2. LLM API Keys
+    # ---------------------------------------------------------
+    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-try:
-    groq_client = Groq(api_key=API_KEY)
-except Exception as e:
-    groq_client = None
-    print(f"⚠️ Groq Client Error: {e}")
+    # ---------------------------------------------------------
+    # 3. Model Names
+    # ---------------------------------------------------------
+    MODEL_GROQ = "llama-3.3-70b-versatile"
+    
+    MODEL_OPENAI = "gpt-4o"
+    
+    MODEL_GEMINI = "gemini-2.5-flash" 
 
-# 4. DUAL EMBEDDING MODELS (Requirement: Compare 2 Models)
-print("⏳ Loading Embedding Model A (MiniLM - Fast)...")
-try:
-    embedding_model_a = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    print("✅ Model A Loaded.")
-except Exception as e:
-    embedding_model_a = None
-    print(f"❌ Failed to load Model A: {e}")
+    # ---------------------------------------------------------
+    # 4. Embedding Model Names
+    # ---------------------------------------------------------
+    # FAST: 384 dimensions. Runs instantly on CPU.
+    EMBEDDING_MODEL_A = "all-MiniLM-L6-v2"    
+    
+    # ACCURATE: 768 dimensions. The "Gold Standard" for stability.
+    EMBEDDING_MODEL_B = "all-mpnet-base-v2"   
 
-print("⏳ Loading Embedding Model B (MPNet - Accurate)...")
-try:
-    embedding_model_b = HuggingFaceEmbeddings(model_name="all-mpnet-base-v2")
-    print("✅ Model B Loaded.")
-except Exception as e:
-    embedding_model_b = None
-    print(f"❌ Failed to load Model B: {e}")
+    # ---------------------------------------------------------
+    # 5. Validation Logic
+    # ---------------------------------------------------------
+    @staticmethod
+    def validate():
+        """
+        Ensures critical environment variables are loaded.
+        """
+        # Critical: Database must exist
+        if not Config.NEO4J_URI or not Config.NEO4J_PASSWORD:
+            raise ValueError("❌ CRITICAL ERROR: Missing Neo4j credentials in .env file.")
+
+        # Warning: Check for LLM keys
+        missing_keys = []
+        if not Config.GROQ_API_KEY: missing_keys.append("GROQ_API_KEY")
+        if not Config.OPENAI_API_KEY: missing_keys.append("OPENAI_API_KEY")
+        if not Config.GOOGLE_API_KEY: missing_keys.append("GOOGLE_API_KEY")
+
+        if missing_keys:
+            print(f"⚠️  WARNING: Missing API keys: {', '.join(missing_keys)}")
+        else:
+            print("✅ Configuration Loaded.")
+
+# Create Groq client instance (assuming you have GROQ_API_KEY in .env)
+groq_client = Groq(api_key=Config.GROQ_API_KEY) if Config.GROQ_API_KEY else None
+
+# Alias for model name (to match your import in intent_parser.py)
+MODEL_NAME = Config.MODEL_GROQ
+
+# Optionally call validate on load
+Config.validate()

@@ -1,4 +1,4 @@
-# ⚽ FPL Intelligent Assistant (GraphRAG) - Milestone 3
+<!-- # ⚽ FPL Intelligent Assistant (GraphRAG) - Milestone 3
 
 ## 📖 Project Overview
 
@@ -76,4 +76,116 @@ This project uses `uv` for blazing fast dependency management and reproducibilit
 ```bash
 git clone [https://github.com/your-repo/fpl-assistant.git](https://github.com/your-repo/fpl-assistant.git)
 cd fpl-assistant
+``` -->
+
+````markdown
+# ACL FPL Companion - Milestone 3: Graph-RAG Travel Assistant
+
+This project implements an end-to-end Graph-RAG (Retrieval-Augmented Generation) system for the Fantasy Premier League (FPL) domain. It combines a Neo4j Knowledge Graph with Large Language Models (LLMs) to answer user queries, provide recommendations, and analyze player statistics.
+
+## 📂 Project Structure
+
+This project follows a modular, component-based architecture:
+
+```text
+Milestone3/
+├── app.py                     # Component 4: User Interface (Streamlit)
+├── backend/
+│   ├── config.py              # Configuration & Secrets Manager
+│   ├── preprocessing/         # Component 1: Intent Classification & Entity Extraction
+│   ├── retrieval/             # Component 2: Graph Retrieval (Cypher + Vector Search)
+│   └── generation/            # Component 3: LLM Integration (Context Construction & Prompting)
+└── scripts/                   # Setup scripts (Vector Indexing, Evaluation)
+```
+````
+
+---
+
+## 🛠️ Installation Instructions (CRITICAL)
+
+**⚠️ IMPORTANT:** This project requires a specific **CPU-optimized** version of PyTorch to keep the installation light (\<300MB) instead of the standard GPU version (\>2GB).
+
+**Please follow these steps exactly in the order listed below.**
+
+### Prerequisites
+
+- Python 3.12+
+- [uv](https://github.com/astral-sh/uv) (Our package manager).
+  - _To install `uv`:_ `pip install uv`
+
+### Step 1: Initialize the Project
+
+Run this command to create the virtual environment (`.venv`) and install the standard project dependencies (LangChain, Neo4j, Streamlit, etc.) defined in `pyproject.toml`.
+
+```bash
+uv sync
+```
+
+### Step 2: Install CPU PyTorch (The "Hybrid" Step)
+
+You must force-install the CPU version of PyTorch manually using `uv pip`.
+**Run this command AFTER Step 1:**
+
+```bash
+uv pip install torch torchvision torchaudio --index-url [https://download.pytorch.org/whl/cpu](https://download.pytorch.org/whl/cpu)
+```
+
+### Step 3: Setup Credentials
+
+1.  Create a file named `.env` in the `Milestone3/` directory.
+2.  Add your API keys (Neo4j, Groq, OpenAI, Gemini) following the format below:
+
+<!-- end list -->
+
+```ini
+# Neo4j Database
+NEO4J_URI=neo4j+ssc://c5d71273.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your_neo4j_password_here
+
+# LLM API Keys
+GROQ_API_KEY=your_groq_key_here
+OPENAI_API_KEY=your_openai_key_here
+GOOGLE_API_KEY=your_google_key_here
+```
+
+### Step 4: Verify Installation
+
+Activate the environment and run the verification command to ensure the hybrid setup is correct.
+
+**Windows (PowerShell):**
+
+```powershell
+.\.venv\Scripts\activate
+python -c "import torch; print(f'✅ PyTorch {torch.__version__} Ready!'); from backend.retrieval.graph_client import graph_client; graph_client.verify_connectivity()"
+```
+
+**Mac/Linux:**
+
+```bash
+source .venv/bin/activate
+python -c "import torch; print(f'✅ PyTorch {torch.__version__} Ready!'); from backend.retrieval.graph_client import graph_client; graph_client.verify_connectivity()"
+```
+
+---
+
+## 🚀 How to Run
+
+Once installed and verified, make sure your virtual environment is activated, then start the Streamlit Interface:
+
+```bash
+streamlit run app.py
+```
+
+## ✨ Features
+
+- **Intent Classification:** Intelligently routes queries (Question Answering vs. Recommendations).
+- **Hybrid Retrieval:** Combines Cypher queries (Database) with Vector Search (Embeddings).
+- **Multi-Model Support:** Compare answers from Groq (Llama), OpenAI (GPT), and Google Gemini.
+- **Interactive UI:** Chat interface with transparent context display.
+
+<!-- end list -->
+
+```
+
 ```

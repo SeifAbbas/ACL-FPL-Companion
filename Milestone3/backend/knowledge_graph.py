@@ -1,5 +1,5 @@
 from neo4j import GraphDatabase
-from .config import NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD, embedding_model_a, embedding_model_b
+from .config import Config
 
 def get_position_aliases(pos_text):
     """Maps user input (e.g., 'Goalie') to DB values (e.g., 'GKP', 'Goal')."""
@@ -21,13 +21,13 @@ def query_knowledge_graph(structured_data, retrieval_mode="baseline", model_choi
     
     # Select the Correct Brain
     if model_choice == "B":
-        active_model = embedding_model_b
+        active_model = Config.EMBEDDING_MODEL_B
         active_index = "player_index_b"
     else:
-        active_model = embedding_model_a
+        active_model = Config.EMBEDDING_MODEL_A
         active_index = "player_index_a"
 
-    driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+    driver = GraphDatabase.driver(Config.NEO4J_URI, auth=(Config.NEO4J_USERNAME, Config.NEO4J_PASSWORD))
     
     # Extract Filters
     target_season = entities.get("Season")

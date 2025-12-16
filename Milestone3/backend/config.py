@@ -1,6 +1,9 @@
 import os
 from dotenv import load_dotenv
 from groq import Groq
+from openai import OpenAI
+from google import genai
+from cerebras.cloud.sdk import Cerebras
 
 # Load environment variables from .env file
 load_dotenv()
@@ -19,53 +22,65 @@ class Config:
     GROQ_API_KEY = os.getenv("GROQ_API_KEY")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+    CEREBRAS_API_KEY = os.getenv("CEREBRAS_API_KEY")
 
     # ---------------------------------------------------------
-    # 3. Model Names
+    # 3. Model Names (YOUR ORIGINAL WORKING MODEL)
     # ---------------------------------------------------------
     MODEL_GROQ = "llama-3.3-70b-versatile"
-    
-    MODEL_OPENAI = "gpt-4o"
-    
-    MODEL_GEMINI = "gemini-2.5-flash" 
+    MODEL_OPENAI = "gpt-oss-20b"
+    MODEL_GEMINI = "gemini-2.5-flash"
+    MODEL_CEREBRAS = "mixtral-8x7b-32768"
 
     # ---------------------------------------------------------
     # 4. Embedding Model Names
     # ---------------------------------------------------------
-    # FAST: 384 dimensions. Runs instantly on CPU.
-    EMBEDDING_MODEL_A = "all-MiniLM-L6-v2"    
-    
-    # ACCURATE: 768 dimensions. The "Gold Standard" for stability.
-    EMBEDDING_MODEL_B = "all-mpnet-base-v2"   
+    EMBEDDING_MODEL_A = "all-MiniLM-L6-v2"
+    EMBEDDING_MODEL_B = "all-mpnet-base-v2"
 
     # ---------------------------------------------------------
     # 5. Validation Logic
     # ---------------------------------------------------------
     @staticmethod
     def validate():
-        """
-        Ensures critical environment variables are loaded.
-        """
-        # Critical: Database must exist
         if not Config.NEO4J_URI or not Config.NEO4J_PASSWORD:
             raise ValueError("❌ CRITICAL ERROR: Missing Neo4j credentials in .env file.")
 
-        # Warning: Check for LLM keys
         missing_keys = []
         if not Config.GROQ_API_KEY: missing_keys.append("GROQ_API_KEY")
         if not Config.OPENAI_API_KEY: missing_keys.append("OPENAI_API_KEY")
         if not Config.GOOGLE_API_KEY: missing_keys.append("GOOGLE_API_KEY")
+        if not Config.CEREBRAS_API_KEY: missing_keys.append("CEREBRAS_API_KEY")
+
 
         if missing_keys:
             print(f"⚠️  WARNING: Missing API keys: {', '.join(missing_keys)}")
         else:
             print("✅ Configuration Loaded.")
 
-# Create Groq client instance (assuming you have GROQ_API_KEY in .env)
+
+# Create client instances
 groq_client = Groq(api_key=Config.GROQ_API_KEY) if Config.GROQ_API_KEY else None
+openai_client = OpenAI(api_key=Config.OPENAI_API_KEY) if Config.OPENAI_API_KEY else None
+gemini_client = genai.Client(api_key=Config.GOOGLE_API_KEY) if Config.GOOGLE_API_KEY else None
+cerebras_client = Cerebras(api_key=Config.CEREBRAS_API_KEY) if Config.CEREBRAS_API_KEY else None
 
-# Alias for model name (to match your import in intent_parser.py)
-MODEL_NAME = Config.MODEL_GROQ
 
-# Optionally call validate on load
+
+
+def get_available_llms():
+    """Returns list of available LLM model names."""
+    available = []
+    if groq_client:
+        available.append(Config.MODEL_GROQ)
+    if openai_client:
+        available.append(Config.MODEL_OPENAI)
+    if gemini_client:
+        available.append(Config.MODEL_GEMINI)
+    if cerebras_client:
+        available.append(Config.MODEL_CEREBRAS)
+    return available if available else [Config.MODEL_GROQ]
+
+
+# Validate on load
 Config.validate()

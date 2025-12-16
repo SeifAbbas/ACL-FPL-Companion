@@ -24,6 +24,8 @@ dependencies = [
     "torch>=2.4.0,<2.6.0",
     "torchvision>=0.19.0,<0.21.0",
     "torchaudio>=2.4.0,<2.6.0",
+    "google-genai>=1.55.0",
+    "cerebras-cloud-sdk>=1.59.0",
 ]
 
 [[tool.uv.index]]

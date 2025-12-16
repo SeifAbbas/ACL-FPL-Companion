@@ -30,7 +30,7 @@ class Config:
     MODEL_GROQ = "llama-3.3-70b-versatile"
     MODEL_OPENAI = "gpt-oss-20b"
     MODEL_GEMINI = "gemini-2.5-flash"
-    MODEL_CEREBRAS = "mixtral-8x7b-32768"
+    MODEL_CEREBRAS = "gpt-oss-120b"
 
     # ---------------------------------------------------------
     # 4. Embedding Model Names

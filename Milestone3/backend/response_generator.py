@@ -144,6 +144,6 @@ def get_model_display_name(model_name):
         Config.MODEL_GROQ: "🦙 Llama 3.3 70B V (Groq)",
         Config.MODEL_OPENAI: "🤖 GPT-oss-20b (OpenAI)",
         Config.MODEL_GEMINI: "✨ Gemini 2.5 flash (Google)",
-        Config.MODEL_CEREBRAS: "🦙 Llama 3.3 70B (Cerebras)"
+        Config.MODEL_CEREBRAS: "🤖 GPT-oss-120b (Cerebras)"
     }
     return display_names.get(model_name, model_name)
